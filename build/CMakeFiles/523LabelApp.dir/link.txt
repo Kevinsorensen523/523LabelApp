@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/523LabelApp.dir/523LabelApp_autogen/mocs_compilation.cpp.o CMakeFiles/523LabelApp.dir/main.cpp.o -o 523LabelApp  /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.4.2 /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.4.2 /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so 
