@@ -13,9 +13,8 @@ WINDOWS
 MAC
 1. Ekstrak zip, pindahkan 523LabelApp.app ke folder Applications.
 2. Pertama kali buka: klik kanan 523LabelApp.app -> Open -> Open.
-3. Daftarkan printer Zebra (sekali saja), di Terminal:
-     lpinfo -v | grep -i zebra
-     sudo lpadmin -p ZTC-ZD220-203dpi-ZPL -E -v "<URI usb://... dari perintah di atas>" -m raw
+3. Colok printer Zebra via USB, lalu klik kanan "Pasang-Printer.command" -> Open
+   (sekali saja). Masukkan password Mac saat diminta.
 
 DATA
 Database produk disimpan otomatis di folder data user, jadi tetap aman
