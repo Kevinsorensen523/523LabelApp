@@ -21,7 +21,8 @@ The application sends raw ZPL to the printer. The transport depends on the OS (s
 
 **Linux / macOS (CUPS, via `lp -o raw`)**
 - Find the USB URI: `lpinfo -v | grep -i zebra`
-- Add a raw queue: `sudo lpadmin -p ZTC-ZD220-203dpi-ZPL -E -v "<usb-uri>" -m raw`
+- Linux: add a raw queue: `sudo lpadmin -p ZTC-ZD220-203dpi-ZPL -E -v "<usb-uri>" -m raw`
+- macOS (raw queues are rejected): run `packaging/Pasang-Printer.command`, which uses the built-in `Generic.ppd`; the app's `lp -o raw` still bypasses the driver
 - macOS deps: `brew install cmake qt`, then build with `-DCMAKE_PREFIX_PATH="$(brew --prefix qt)"`
 
 **Windows (Print Spooler, RAW datatype)**
