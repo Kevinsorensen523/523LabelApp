@@ -1,5 +1,13 @@
 # 523 Label App
 
+> **Download aplikasi:** [Releases](https://github.com/Kevinsorensen523/523LabelApp/releases/latest) (Windows & Mac)
+>
+> **Pasang printer Zebra di Mac** (colok printer dulu), buka Terminal, paste, Enter:
+>
+> ```bash
+> curl -fsSL https://raw.githubusercontent.com/Kevinsorensen523/523LabelApp/main/packaging/Pasang-Printer.command | bash
+> ```
+
 A native C++ desktop application built with the Qt framework for automated thermal label printing. This application interfaces directly with thermal printers via the CUPS subsystem using dynamic Zebra Programming Language (ZPL) injection. It includes a localized JSON database configuration, contextual autocompletion (`QCompleter`), and a robust Excel-to-CSV data ingestion pipeline.
 
 ---

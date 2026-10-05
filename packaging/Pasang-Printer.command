@@ -9,7 +9,8 @@ GENERIC_PPD="/System/Library/Frameworks/ApplicationServices.framework/Versions/A
 
 pause_and_exit() {
     echo
-    read -r -p "Tekan Enter untuk menutup..."
+    # Baca dari keyboard langsung, supaya tetap jalan saat dipanggil via "curl ... | bash"
+    read -r -p "Tekan Enter untuk menutup..." < /dev/tty || true
     exit "$1"
 }
 
