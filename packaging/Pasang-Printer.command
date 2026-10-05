@@ -3,6 +3,9 @@
 # Cukup klik dua kali file ini.
 
 PRINTER_NAME="ZTC-ZD220-203dpi-ZPL"
+# macOS menolak antrean raw (-m raw); pakai driver generik bawaan.
+# App tetap kirim ZPL mentah lewat "lp -o raw", jadi driver ini dilewati saat cetak.
+GENERIC_PPD="/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Resources/Generic.ppd"
 
 pause_and_exit() {
     echo
@@ -22,7 +25,7 @@ fi
 echo "Ketemu: $URI"
 echo
 echo "Masukkan password Mac kamu (tidak kelihatan saat diketik, itu normal):"
-if sudo lpadmin -p "$PRINTER_NAME" -E -v "$URI" -m raw; then
+if sudo lpadmin -p "$PRINTER_NAME" -E -v "$URI" -P "$GENERIC_PPD"; then
     echo
     echo "BERHASIL. Printer terdaftar dengan nama: $PRINTER_NAME"
     echo "Sekarang buka 523LabelApp dan langsung cetak."
