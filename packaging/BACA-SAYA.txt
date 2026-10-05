@@ -1,0 +1,24 @@
+523 Label App
+=============
+
+WINDOWS
+1. Ekstrak zip ini ke folder mana saja (misalnya Documents).
+2. Install driver Zebra "ZDesigner" (download dari situs Zebra, cari "ZD220 driver"),
+   lalu colok printer via USB.
+3. Buka 523LabelApp.exe.
+   Kalau muncul "Windows protected your PC": klik "More info" -> "Run anyway".
+4. Di tab Settings, isi "Nama Printer" persis seperti nama di
+   Settings > Printers & scanners (contoh: ZDesigner ZD220-203dpi ZPL).
+
+MAC
+1. Ekstrak zip, pindahkan 523LabelApp.app ke folder Applications.
+2. Pertama kali buka: klik kanan 523LabelApp.app -> Open -> Open.
+3. Daftarkan printer Zebra (sekali saja), di Terminal:
+     lpinfo -v | grep -i zebra
+     sudo lpadmin -p ZTC-ZD220-203dpi-ZPL -E -v "<URI usb://... dari perintah di atas>" -m raw
+
+DATA
+Database produk disimpan otomatis di folder data user, jadi tetap aman
+walau zip versi baru diekstrak ulang:
+  Windows: %APPDATA%\523\523LabelApp\523_database.json
+  Mac:     ~/Library/Application Support/523/523LabelApp/523_database.json

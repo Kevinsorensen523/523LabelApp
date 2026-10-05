@@ -1,5 +1,0 @@
-/home/pc010/523LabelApp/build/CMakeFiles/523LabelApp.dir
-/home/pc010/523LabelApp/build/CMakeFiles/edit_cache.dir
-/home/pc010/523LabelApp/build/CMakeFiles/rebuild_cache.dir
-/home/pc010/523LabelApp/build/CMakeFiles/523LabelApp_autogen_timestamp_deps.dir
-/home/pc010/523LabelApp/build/CMakeFiles/523LabelApp_autogen.dir

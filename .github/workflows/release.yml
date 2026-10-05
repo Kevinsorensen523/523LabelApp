@@ -1,0 +1,90 @@
+name: Build portable zip
+
+# Jalan otomatis saat push tag versi (contoh: git tag v1.0 && git push --tags),
+# atau manual dari tab Actions untuk tes build.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  QT_VERSION: "6.8.*"
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          arch: win64_msvc2022_64
+          cache: true
+
+      - name: Build
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $dist = "523LabelApp-Windows"
+          New-Item -ItemType Directory $dist | Out-Null
+          Copy-Item build/523LabelApp.exe $dist/
+          windeployqt --release --no-translations --no-system-d3d-compiler --no-opengl-sw "$dist/523LabelApp.exe"
+          # Runtime MSVC ikut dibawa supaya tidak perlu install VC++ Redistributable
+          Copy-Item "$env:VCToolsRedistDir\x64\Microsoft.VC143.CRT\*.dll" $dist/
+          Copy-Item packaging/BACA-SAYA.txt $dist/
+          Compress-Archive -Path $dist -DestinationPath "$dist.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 523LabelApp-Windows
+          path: 523LabelApp-Windows.zip
+
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: 523LabelApp-Windows.zip
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          cache: true
+
+      - name: Build
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
+
+      - name: Package
+        run: |
+          macdeployqt build/523LabelApp.app
+          # Sign ulang (ad-hoc) karena macdeployqt mengubah binary; tanpa ini Apple Silicon menolak membuka app
+          codesign --force --deep --sign - build/523LabelApp.app
+          mkdir 523LabelApp-macOS
+          mv build/523LabelApp.app 523LabelApp-macOS/
+          cp packaging/BACA-SAYA.txt 523LabelApp-macOS/
+          ditto -c -k --keepParent 523LabelApp-macOS 523LabelApp-macOS.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 523LabelApp-macOS
+          path: 523LabelApp-macOS.zip
+
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: 523LabelApp-macOS.zip

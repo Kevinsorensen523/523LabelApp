@@ -1,0 +1,5 @@
+/Users/kevin/Documents/GitHub/523LabelApp/build-mac/CMakeFiles/523LabelApp.dir
+/Users/kevin/Documents/GitHub/523LabelApp/build-mac/CMakeFiles/edit_cache.dir
+/Users/kevin/Documents/GitHub/523LabelApp/build-mac/CMakeFiles/rebuild_cache.dir
+/Users/kevin/Documents/GitHub/523LabelApp/build-mac/CMakeFiles/523LabelApp_autogen_timestamp_deps.dir
+/Users/kevin/Documents/GitHub/523LabelApp/build-mac/CMakeFiles/523LabelApp_autogen.dir

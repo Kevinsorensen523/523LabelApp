@@ -8,7 +8,6 @@
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QPushButton>
-#include <QProcess>
 #include <QString>
 #include <QDebug>
 #include <QSettings>
@@ -21,6 +20,8 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
+#include <QDir>
+#include <QStandardPaths>
 
 // Header untuk JSON Storage & Autocomplete bawaan Qt Core
 #include <QJsonDocument>
@@ -30,7 +31,23 @@
 #include <QStandardItemModel>
 #include <QMap>
 
+#include "raw_printer.h"
+
 const QString JSON_FILE_NAME = "523_database.json";
+
+// Lokasi database di folder data user (AppData / Application Support / ~/.local/share),
+// supaya tetap bisa ditulis walau app diekstrak di mana saja dan aman saat ganti versi.
+QString databasePath() {
+    QString dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir().mkpath(dir);
+    QString path = QDir(dir).filePath(JSON_FILE_NAME);
+
+    // Migrasi: salin database lama dari folder kerja kalau di lokasi baru belum ada
+    if (!QFile::exists(path) && QFile::exists(JSON_FILE_NAME)) {
+        QFile::copy(JSON_FILE_NAME, path);
+    }
+    return path;
+}
 
 int mmToDots(double mm) {
     return qRound((mm * 203.0) / 25.4);
@@ -39,7 +56,7 @@ int mmToDots(double mm) {
 // Fungsi load data dari file JSON
 QMap<QString, QString> loadJsonData() {
     QMap<QString, QString> dataMap;
-    QFile file(JSON_FILE_NAME);
+    QFile file(databasePath());
     if (!file.open(QIODevice::ReadOnly)) {
         return dataMap; // Kembalikan map kosong jika file belum ada
     }
@@ -69,7 +86,7 @@ void saveToJson(const QString &b1, const QString &b2) {
     }
 
     QJsonDocument doc(jsonObj);
-    QFile file(JSON_FILE_NAME);
+    QFile file(databasePath());
     if (file.open(QIODevice::WriteOnly)) {
         file.write(doc.toJson());
         file.close();
@@ -107,7 +124,7 @@ int main(int argc, char *argv[])
     // ==========================================
     QFormLayout *settingsLayout = new QFormLayout(tabSettings);
 
-    QLineEdit *printerEdit = new QLineEdit(settings.value("printer", "ZTC-ZD220-203dpi-ZPL").toString());
+    QLineEdit *printerEdit = new QLineEdit(settings.value("printer", DEFAULT_PRINTER_NAME).toString());
     
     QSpinBox *darknessSpin = new QSpinBox();
     darknessSpin->setRange(0, 100);
@@ -139,7 +156,7 @@ int main(int argc, char *argv[])
 
     QPushButton *btnImportCsv = new QPushButton("Import Excel (File .csv)");
     
-    settingsLayout->addRow("Nama Printer (CUPS):", printerEdit);
+    settingsLayout->addRow("Nama Printer:", printerEdit);
     settingsLayout->addRow("Ketebalan Tulisan / Darkness:", darknessSpin);
     settingsLayout->addRow("Margin Paling Kiri (Kiri -> L1):", pageMarginLeftSpin);
     settingsLayout->addRow("Lebar 1 Kertas Label:", labelWidthSpin);
@@ -296,7 +313,7 @@ int main(int argc, char *argv[])
             jsonObj.insert(it.key(), it.value());
         }
         QJsonDocument doc(jsonObj);
-        QFile outFile(JSON_FILE_NAME);
+        QFile outFile(databasePath());
         if (outFile.open(QIODevice::WriteOnly)) {
             outFile.write(doc.toJson());
             outFile.close();
@@ -377,20 +394,7 @@ int main(int argc, char *argv[])
             zpl += "^XZ\n";
         }
 
-        QString printerName = printerEdit->text();
-        QProcess process;
-        
-        if (printerName.trimmed().isEmpty()) {
-            process.start("lp", QStringList() << "-o" << "raw");
-        } else {
-            process.start("lp", QStringList() << "-d" << printerName.trimmed() << "-o" << "raw");
-        }
-        
-        process.write(zpl.toUtf8());
-        process.closeWriteChannel();
-        process.waitForFinished();
-        
-        QString error = process.readAllStandardError();
+        QString error = sendRawToPrinter(printerEdit->text(), zpl.toUtf8());
         if(!error.isEmpty()) {
             QMessageBox::warning(nullptr, "Print Error", "Terjadi error: \n" + error);
         }

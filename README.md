@@ -17,12 +17,19 @@ The application is designed for Linux (Ubuntu-based environments) and supports i
 
 ### Printer Setup
 
-The application uses CUPS for raw ZPL printing.
+The application sends raw ZPL to the printer. The transport depends on the OS (see `raw_printer.cpp`).
 
-Ensure:
-- Printer is installed in CUPS
-- Queue name is correctly configured (example: `ZTC-ZD220-203dpi-ZPL`)
-- Printer supports ZPL or ZPL-compatible mode
+**Linux / macOS (CUPS, via `lp -o raw`)**
+- Find the USB URI: `lpinfo -v | grep -i zebra`
+- Add a raw queue: `sudo lpadmin -p ZTC-ZD220-203dpi-ZPL -E -v "<usb-uri>" -m raw`
+- macOS deps: `brew install cmake qt`, then build with `-DCMAKE_PREFIX_PATH="$(brew --prefix qt)"`
+
+**Windows (Print Spooler, RAW datatype)**
+- Install the Zebra **ZDesigner** driver and connect the printer via USB
+- Use the exact name shown in *Settings → Printers & scanners* (default: `ZDesigner ZD220-203dpi ZPL`)
+- Build with Qt6 for Windows (MSVC or MinGW); `winspool` is linked automatically
+
+On all platforms, leaving the printer name empty prints to the system default printer.
 
 ---
 
